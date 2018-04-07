@@ -37,7 +37,7 @@ func mtaTweetListener(client *twitter.Client) {
 		tweets, _, _ := client.Timelines.UserTimeline(params)
 		fmt.Printf("Found %v Tweets\n", len(tweets))
 		for _, tweet := range tweets {
-			if strings.Contains(tweet.FullText, "because") || true {
+			if strings.Contains(tweet.FullText, "because") {
 				createNewTweet(tweet.FullText, reasons, client)
 			}
 		}
