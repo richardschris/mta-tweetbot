@@ -1,1 +1,1 @@
-web: mta-tweetbot
+twooter: mta-tweetbot
