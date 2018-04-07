@@ -32,10 +32,11 @@ func mtaTweetListener(client *twitter.Client) {
 		TweetMode:      "extended",
 		ExcludeReplies: twitter.Bool(true),
 	}
-	client.Statuses.Update("TESTING A TWEET", nil)
+
 	for {
 		tweets, _, _ := client.Timelines.UserTimeline(params)
 		fmt.Printf("Found %v Tweets\n", len(tweets))
+
 		for _, tweet := range tweets {
 			if strings.Contains(tweet.FullText, "because") {
 				createNewTweet(tweet.FullText, reasons, client)
@@ -46,14 +47,14 @@ func mtaTweetListener(client *twitter.Client) {
 			params.SinceID = sinceID.ID
 		}
 		time.Sleep(60 * time.Second)
-		fmt.Println("Begin again")
+		fmt.Printf("Begin again with SinceID %v \n", params.SinceID)
 	}
 }
 
 func createNewTweet(becauseString string, reasons []string, client *twitter.Client) {
 	rand.Seed(time.Now().Unix())
 	becauseIndex := strings.Index(becauseString, "because")
-	tweetSlice := becauseString[0:becauseIndex+7]
+	tweetSlice := becauseString[0 : becauseIndex+8]
 	becauseTweet := tweetSlice + reasons[rand.Intn(len(reasons))]
 	client.Statuses.Update(becauseTweet, nil)
 	fmt.Println("Made a tweet at %v", time.Now())
@@ -76,6 +77,10 @@ func main() {
 		SkipStatus:   twitter.Bool(true),
 		IncludeEmail: twitter.Bool(true),
 	}
-	client.Accounts.VerifyCredentials(verifyParams)
+	_, _, err := client.Accounts.VerifyCredentials(verifyParams)
+	if err != nil {
+		fmt.Println("WOAH ERROR WITH CREDENTIALS")
+		os.Exit(1)
+	}
 	mtaTweetListener(client)
 }
