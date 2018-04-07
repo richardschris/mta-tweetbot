@@ -37,15 +37,21 @@ func mtaTweetListener(client *twitter.Client) {
 	for {
 		tweets, _, _ := client.Timelines.UserTimeline(params)
 		fmt.Printf("Found %v Tweets\n", len(tweets))
-
+		sinceIDs := make([]int64, 0)
 		for _, tweet := range tweets {
 			if strings.Contains(tweet.FullText, "because") {
 				createNewTweet(tweet.FullText, reasons, client)
 			}
+			sinceIDs = append(sinceIDs, tweet.ID)
 		}
 		if len(tweets) > 0 {
-			sinceID := tweets[0]
-			params.SinceID = sinceID.ID
+			finalSinceID := sinceIDs[0]
+			for _, sinceID := range sinceIDs {
+				if finalSinceID < sinceID {
+					finalSinceID = sinceID
+				}
+			}
+			params.SinceID = finalSinceID
 		}
 		time.Sleep(60 * time.Second)
 		fmt.Printf("Begin again with SinceID %v \n", params.SinceID)
