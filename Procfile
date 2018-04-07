@@ -1,1 +1,1 @@
-twitter: mta-tweetbot
+web: mta-tweetbot
