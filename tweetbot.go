@@ -25,6 +25,7 @@ func mtaTweetListener(client *twitter.Client) {
 		"you should stop and smell the flowers",
 		"",
 	)
+	rand.Seed(time.Now().Unix())
 
 	params := &twitter.UserTimelineParams{
 		ScreenName:     "NYCTSubway",
@@ -52,7 +53,6 @@ func mtaTweetListener(client *twitter.Client) {
 }
 
 func createNewTweet(becauseString string, reasons []string, client *twitter.Client) {
-	rand.Seed(time.Now().Unix())
 	becauseIndex := strings.Index(becauseString, "because")
 	tweetSlice := becauseString[0 : becauseIndex+8]
 	becauseTweet := tweetSlice + reasons[rand.Intn(len(reasons))]
