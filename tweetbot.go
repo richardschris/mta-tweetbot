@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
 	"os"
@@ -11,20 +12,23 @@ import (
 	"github.com/dghubble/oauth1"
 )
 
-func mtaTweetListener(client *twitter.Client) {
+func readBecauseFile() []string {
+	file, err := os.Open("because.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
 	reasons := make([]string, 0)
-	reasons = append(reasons,
-		"nobody knows how anything works anymore",
-		"Andrew Cuomo wants you to have a bad day",
-		"the universe is conspiring against you",
-		"the MTA thinks you can fucking walk",
-		"it's infrastructure week",
-		"you should eat at Arby's",
-		"we replaced all trains with golf carts",
-		"we can't have nice things",
-		"you should stop and smell the flowers",
-		"someone didn't stand clear of the closing doors",
-	)
+	for scanner.Scan() {
+		reasons = append(reasons, scanner.Text())
+	}
+	return reasons
+}
+
+func mtaTweetListener(client *twitter.Client) {
+	reasons := readBecauseFile()
 	rand.Seed(time.Now().Unix())
 
 	params := &twitter.UserTimelineParams{
