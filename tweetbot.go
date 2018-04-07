@@ -23,7 +23,7 @@ func mtaTweetListener(client *twitter.Client) {
 		"we replaced all trains with golf carts",
 		"we can't have nice things",
 		"you should stop and smell the flowers",
-		"",
+		"someone didn't stand clear of the closing doors",
 	)
 	rand.Seed(time.Now().Unix())
 
@@ -63,7 +63,7 @@ func createNewTweet(becauseString string, reasons []string, client *twitter.Clie
 	tweetSlice := becauseString[0 : becauseIndex+8]
 	becauseTweet := tweetSlice + reasons[rand.Intn(len(reasons))]
 	client.Statuses.Update(becauseTweet, nil)
-	fmt.Println("Made a tweet at %v", time.Now())
+	fmt.Printf("Made a tweet at %v\n", time.Now())
 }
 
 func main() {
