@@ -53,7 +53,7 @@ func mtaTweetListener(client *twitter.Client) {
 func createNewTweet(becauseString string, reasons []string, client *twitter.Client) {
 	rand.Seed(time.Now().Unix())
 	becauseIndex := strings.Index(becauseString, "because")
-	tweetSlice := becauseString[0:becauseIndex]
+	tweetSlice := becauseString[0:becauseIndex+7]
 	becauseTweet := tweetSlice + reasons[rand.Intn(len(reasons))]
 	client.Statuses.Update(becauseTweet, nil)
 	fmt.Println("Made a tweet at %v", time.Now())
