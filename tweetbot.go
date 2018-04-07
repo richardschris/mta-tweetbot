@@ -32,12 +32,13 @@ func mtaTweetListener(client *twitter.Client) {
 		TweetMode:      "extended",
 		ExcludeReplies: twitter.Bool(true),
 	}
+	client.Statuses.Update("TESTING A TWEET", nil)
 	for {
 		tweets, _, _ := client.Timelines.UserTimeline(params)
 		fmt.Printf("Found %v Tweets\n", len(tweets))
 		for _, tweet := range tweets {
-			if strings.Contains(tweet.FullText, "because") {
-				createNewTweet(tweet.FullText, reasons)
+			if strings.Contains(tweet.FullText, "because") || true {
+				createNewTweet(tweet.FullText, reasons, client)
 			}
 		}
 		if len(tweets) > 0 {
@@ -49,12 +50,13 @@ func mtaTweetListener(client *twitter.Client) {
 	}
 }
 
-func createNewTweet(becauseString string, reasons []string) {
+func createNewTweet(becauseString string, reasons []string, client *twitter.Client) {
 	rand.Seed(time.Now().Unix())
 	becauseIndex := strings.Index(becauseString, "because")
 	tweetSlice := becauseString[0:becauseIndex]
 	becauseTweet := tweetSlice + reasons[rand.Intn(len(reasons))]
-	fmt.Println(becauseTweet)
+	client.Statuses.Update(becauseTweet, nil)
+	fmt.Println("Made a tweet at %v", time.Now())
 }
 
 func main() {
