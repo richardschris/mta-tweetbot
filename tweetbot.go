@@ -44,7 +44,7 @@ func mtaTweetListener(client *twitter.Client) {
 			}
 		}
 		if len(tweets) > 0 {
-			sinceID := tweets[len(tweets)-1]
+			sinceID := tweets[0]
 			params.SinceID = sinceID.ID
 		}
 		time.Sleep(60 * time.Second)
