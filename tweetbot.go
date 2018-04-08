@@ -12,8 +12,8 @@ import (
 	"github.com/dghubble/oauth1"
 )
 
-func readBecauseFile() []string {
-	file, err := os.Open("because.txt")
+func readFile(filename string) []string {
+	file, err := os.Open(filename)
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,8 @@ func readBecauseFile() []string {
 }
 
 func mtaTweetListener(client *twitter.Client) {
-	reasons := readBecauseFile()
+	becauseReasons := readFile("because.txt")
+	resumedReasons := readFile("resumed.txt")
 	rand.Seed(time.Now().Unix())
 
 	params := &twitter.UserTimelineParams{
@@ -44,7 +45,9 @@ func mtaTweetListener(client *twitter.Client) {
 		sinceIDs := make([]int64, 0)
 		for _, tweet := range tweets {
 			if strings.Contains(tweet.FullText, "because") {
-				createNewTweet(tweet.FullText, reasons, client)
+				createNewTweet(tweet.FullText, becauseReasons, "because", client)
+			} else if strings.Contains(tweet.FullText, "resumed") {
+				createNewTweet(tweet.FullText, resumedReasons, "resumed", client)
 			}
 			sinceIDs = append(sinceIDs, tweet.ID)
 		}
@@ -62,11 +65,11 @@ func mtaTweetListener(client *twitter.Client) {
 	}
 }
 
-func createNewTweet(becauseString string, reasons []string, client *twitter.Client) {
-	becauseIndex := strings.Index(becauseString, "because")
-	tweetSlice := becauseString[0 : becauseIndex+8]
-	becauseTweet := tweetSlice + reasons[rand.Intn(len(reasons))]
-	client.Statuses.Update(becauseTweet, nil)
+func createNewTweet(reasonString string, reasons []string, reasonType string, client *twitter.Client) {
+	reasonIndex := strings.Index(reasonString, reasonType)
+	tweetSlice := reasonString[0 : reasonIndex+len(reasonType)]
+	reasonTweet := tweetSlice + reasons[rand.Intn(len(reasons))]
+	client.Statuses.Update(reasonTweet, nil)
 	fmt.Printf("Made a tweet at %v\n", time.Now())
 }
 
@@ -76,13 +79,13 @@ func main() {
 	accessToken := os.Getenv("ACCESS_TOKEN")
 	accessSecret := os.Getenv("ACCESS_SECRET")
 
+	// boilerplate for go-twitter
 	config := oauth1.NewConfig(consumerKey, consumerSecret)
 	token := oauth1.NewToken(accessToken, accessSecret)
-	// OAuth1 http.Client will automatically authorize Requests
 
-	httpClient := config.Client(oauth1.NoContext, token) // Twitter client
+	httpClient := config.Client(oauth1.NoContext, token)
 	client := twitter.NewClient(httpClient)
-	// Verify Credentials
+
 	verifyParams := &twitter.AccountVerifyParams{
 		SkipStatus:   twitter.Bool(true),
 		IncludeEmail: twitter.Bool(true),
@@ -90,7 +93,7 @@ func main() {
 	_, _, err := client.Accounts.VerifyCredentials(verifyParams)
 	if err != nil {
 		fmt.Println("WOAH ERROR WITH CREDENTIALS")
-		os.Exit(1)
+		panic(err)
 	}
 	mtaTweetListener(client)
 }
