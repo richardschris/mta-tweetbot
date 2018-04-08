@@ -11,6 +11,6 @@ It's a Heroku app and I'll probably abstract it into a library eventually but ¯
 Why are you reading this
 
 ```
-heroku create bullshit
+heroku create app-name
 git push heroku master
 ```
