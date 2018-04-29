@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"html"
 	"math/rand"
 	"os"
 	"strings"
@@ -69,7 +70,7 @@ func createNewTweet(reasonString string, reasons []string, reasonType string, cl
 	reasonIndex := strings.Index(reasonString, reasonType)
 	tweetSlice := reasonString[0 : reasonIndex+len(reasonType)]
 	reasonTweet := tweetSlice + reasons[rand.Intn(len(reasons))]
-	client.Statuses.Update(reasonTweet, nil)
+	client.Statuses.Update(html.UnescapeString(reasonTweet), nil)
 	fmt.Printf("Made a tweet at %v\n", time.Now())
 }
 
