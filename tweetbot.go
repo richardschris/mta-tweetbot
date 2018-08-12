@@ -45,6 +45,9 @@ func mtaTweetListener(client *twitter.Client) {
 		fmt.Printf("Found %v Tweets\n", len(tweets))
 		sinceIDs := make([]int64, 0)
 		for _, tweet := range tweets {
+			if strings.Contains(tweet.FullText, "struck") {
+				continue
+			}
 			if strings.Contains(tweet.FullText, "because") {
 				createNewTweet(tweet.FullText, becauseReasons, "because", client)
 			} else if strings.Contains(tweet.FullText, "resumed") {
